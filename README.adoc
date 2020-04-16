@@ -1,5 +1,3 @@
-= publicator
-
-
+= ipfs-market
 
 == Prerequisites
