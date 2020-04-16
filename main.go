@@ -4,30 +4,29 @@ import (
 	"os"
 
 	"github.com/ipfs/go-log"
+	"github.com/lukasz-zimnoch/ipfs-market/cmd"
 	"github.com/urfave/cli"
 )
 
 const defaultWorkdirPath = "./workdir"
 
-var (
-	logger      = log.Logger("main")
-	workdirPath string
-)
+var logger = log.Logger("im-main")
 
 func main() {
+	_ = log.SetLogLevel("*", "DEBUG")
+
 	app := cli.NewApp()
 
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
-			Name:        "workdir,w",
-			Value:       defaultWorkdirPath,
-			Destination: &workdirPath,
-			Usage:       "full path to the working directory",
+			Name:  "workdir,w",
+			Value: defaultWorkdirPath,
+			Usage: "full path to the working directory",
 		},
 	}
 
 	app.Commands = []cli.Command{
-		// TODO: add commands.
+		cmd.UploadCommand,
 	}
 
 	err := app.Run(os.Args)
