@@ -17,10 +17,10 @@ var UploadCommand = cli.Command{
 }
 
 func Upload(c *cli.Context) error {
+	storageUrl := c.GlobalString("storage")
 	workdir := c.GlobalString("workdir")
 	file := c.String("file")
 	filePath := workdir + "/" + file
 
-	//TODO: pass storage url from config.
-	return process.Upload("", filePath)
+	return process.Upload(storageUrl, filePath)
 }

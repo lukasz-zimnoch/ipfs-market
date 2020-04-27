@@ -7,21 +7,11 @@ import (
 	"fmt"
 )
 
-type SymmetricKey [32]byte
-
 type AesGcm struct {
 	cipher.AEAD
-	key SymmetricKey
 }
 
-func NewAesGcm() (*AesGcm, error) {
-	var key SymmetricKey
-
-	_, err := rand.Read(key[:])
-	if err != nil {
-		return nil, fmt.Errorf("could not generate symmetric key: [%v]", err)
-	}
-
+func NewAesGcm(key SymmetricKey) (*AesGcm, error) {
 	aesInstance, err := aes.NewCipher(key[:])
 	if err != nil {
 		return nil, fmt.Errorf("could not create AES instance: [%v]", err)
@@ -32,7 +22,7 @@ func NewAesGcm() (*AesGcm, error) {
 		return nil, fmt.Errorf("could not create AES-GCM instance: [%v]", err)
 	}
 
-	return &AesGcm{aesGcmInstance, key}, nil
+	return &AesGcm{aesGcmInstance}, nil
 }
 
 func (ag *AesGcm) Encrypt(data []byte) ([]byte, error) {

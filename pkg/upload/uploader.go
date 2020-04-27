@@ -9,6 +9,10 @@ import (
 
 var logger = log.Logger("im-uploader")
 
+const maxFileByteSize = 1048576
+
+type Cid string
+
 type Cipher interface {
 	Encrypt(data []byte) ([]byte, error)
 }
@@ -29,15 +33,21 @@ func NewUploader(cipher Cipher, storage Storage) *Uploader {
 	}
 }
 
-func (u *Uploader) Upload(filePath string) error {
+func (u *Uploader) Upload(filePath string) (Cid, error) {
 	logger.Infof("starting uploading file [%v]", filePath)
 
 	fileBytes, err := ioutil.ReadFile(filePath)
 	if err != nil {
-		return fmt.Errorf("could not read file [%v]: [%v]", filePath, err)
+		return "", fmt.Errorf("could not read file [%v]: [%v]", filePath, err)
 	}
 
-	// TODO: check if file size does not exceed 1048576 bytes.
+	if len(fileBytes) > maxFileByteSize {
+		return "", fmt.Errorf(
+			"file [%v] exceeds maximum file size of [%v] bytes",
+			filePath,
+			maxFileByteSize,
+		)
+	}
 
 	logger.Infof(
 		"file [%v] has been read successfully; size: [%v] bytes",
@@ -47,7 +57,7 @@ func (u *Uploader) Upload(filePath string) error {
 
 	fileEncryptedBytes, err := u.cipher.Encrypt(fileBytes)
 	if err != nil {
-		return fmt.Errorf("could not encrypt file [%v]: [%v]", filePath, err)
+		return "", fmt.Errorf("could not encrypt file [%v]: [%v]", filePath, err)
 	}
 
 	logger.Infof(
@@ -59,7 +69,7 @@ func (u *Uploader) Upload(filePath string) error {
 
 	cid, err := u.storage.Store(fileEncryptedBytes)
 	if err != nil {
-		return fmt.Errorf("could not store file [%v]: [%v]", filePath, err)
+		return "", fmt.Errorf("could not store file [%v]: [%v]", filePath, err)
 	}
 
 	logger.Infof(
@@ -69,7 +79,5 @@ func (u *Uploader) Upload(filePath string) error {
 		cid,
 	)
 
-	// TODO: store CID and encrypted key on-chain.
-
-	return nil
+	return Cid(cid), nil
 }

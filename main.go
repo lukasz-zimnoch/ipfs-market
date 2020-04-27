@@ -8,7 +8,10 @@ import (
 	"github.com/urfave/cli"
 )
 
-const defaultWorkdirPath = "./workdir"
+const (
+	defaultStorageUrl  = "http://localhost:5001"
+	defaultWorkdirPath = "./workdir"
+)
 
 var logger = log.Logger("im-main")
 
@@ -18,6 +21,11 @@ func main() {
 	app := cli.NewApp()
 
 	app.Flags = []cli.Flag{
+		cli.StringFlag{
+			Name:  "storage,s",
+			Value: defaultStorageUrl,
+			Usage: "url to the storage node",
+		},
 		cli.StringFlag{
 			Name:  "workdir,w",
 			Value: defaultWorkdirPath,

@@ -9,7 +9,12 @@ import (
 )
 
 func Upload(storageUrl string, filePath string) error {
-	aesGcmCipher, err := cipher.NewAesGcm()
+	key, err := cipher.GenerateSymmetricKey()
+	if err != nil {
+		return fmt.Errorf("could not generate symmetric key: [%v]", err)
+	}
+
+	aesGcmCipher, err := cipher.NewAesGcm(key)
 	if err != nil {
 		return fmt.Errorf("could not create cipher: [%v]", err)
 	}
@@ -18,5 +23,10 @@ func Upload(storageUrl string, filePath string) error {
 
 	uploader := upload.NewUploader(aesGcmCipher, ipfsStorage)
 
-	return uploader.Upload(filePath)
+	_, err = uploader.Upload(filePath)
+	if err != nil {
+		return fmt.Errorf("could not upload file: [%v]", err)
+	}
+
+	return nil
 }
