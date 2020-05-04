@@ -2,13 +2,13 @@ package process
 
 import (
 	"fmt"
-
+	"github.com/lukasz-zimnoch/ipfs-market/pkg/chain"
 	"github.com/lukasz-zimnoch/ipfs-market/pkg/cipher"
+	"github.com/lukasz-zimnoch/ipfs-market/pkg/file"
 	"github.com/lukasz-zimnoch/ipfs-market/pkg/storage"
-	"github.com/lukasz-zimnoch/ipfs-market/pkg/upload"
 )
 
-func Upload(storageUrl string, filePath string) error {
+func Upload(ethNodeUrl, ethPrivateKey, storageUrl string, filePath string) error {
 	key, err := cipher.GenerateSymmetricKey()
 	if err != nil {
 		return fmt.Errorf("could not generate symmetric key: [%v]", err)
@@ -16,16 +16,33 @@ func Upload(storageUrl string, filePath string) error {
 
 	aesGcmCipher, err := cipher.NewAesGcm(key)
 	if err != nil {
-		return fmt.Errorf("could not create cipher: [%v]", err)
+		return fmt.Errorf("could not create AES-GCM cipher: [%v]", err)
 	}
 
 	ipfsStorage := storage.NewIpfs(storageUrl)
 
-	uploader := upload.NewUploader(aesGcmCipher, ipfsStorage)
+	uploader := file.NewUploader(aesGcmCipher, ipfsStorage)
 
-	_, err = uploader.Upload(filePath)
+	fileCid, err := uploader.Upload(filePath)
 	if err != nil {
 		return fmt.Errorf("could not upload file: [%v]", err)
+	}
+
+	eciesCipher, err := cipher.NewEcies(ethPrivateKey)
+	if err != nil {
+		return fmt.Errorf("could not create ECIES cipher: [%v]", err)
+	}
+
+	ethereum, err := chain.NewEthereumClient(ethNodeUrl)
+	if err != nil {
+		return fmt.Errorf("could not create ethereum client: [%v]", err)
+	}
+
+	publisher := file.NewPublisher(eciesCipher, ethereum)
+
+	err = publisher.Publish(fileCid, key[:])
+	if err != nil {
+		return fmt.Errorf("could not publish file: [%v]", err)
 	}
 
 	return nil

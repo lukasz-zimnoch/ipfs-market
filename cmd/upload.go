@@ -16,11 +16,17 @@ var UploadCommand = cli.Command{
 	},
 }
 
+// TODO 1: refactoring:
+//  - config extractor
+//  - processes as objects?
+//  - use config object instead of separate params
 func Upload(c *cli.Context) error {
+	ethNodeUrl := c.GlobalString("eth-node")
+	ethPrivateKey := c.GlobalString("eth-private-key")
 	storageUrl := c.GlobalString("storage")
 	workdir := c.GlobalString("workdir")
 	file := c.String("file")
 	filePath := workdir + "/" + file
 
-	return process.Upload(storageUrl, filePath)
+	return process.Upload(ethNodeUrl, ethPrivateKey, storageUrl, filePath)
 }

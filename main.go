@@ -9,6 +9,7 @@ import (
 )
 
 const (
+	defaultEthNodeUrl  = "http://localhost:8545"
 	defaultStorageUrl  = "http://localhost:5001"
 	defaultWorkdirPath = "./workdir"
 )
@@ -21,6 +22,15 @@ func main() {
 	app := cli.NewApp()
 
 	app.Flags = []cli.Flag{
+		cli.StringFlag{
+			Name:  "eth-node,en",
+			Value: defaultEthNodeUrl,
+			Usage: "url to the ethereum node",
+		},
+		cli.StringFlag{
+			Name:  "eth-private-key,epk",
+			Usage: "ethereum account private key",
+		},
 		cli.StringFlag{
 			Name:  "storage,s",
 			Value: defaultStorageUrl,

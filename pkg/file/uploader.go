@@ -1,4 +1,4 @@
-package upload
+package file
 
 import (
 	"fmt"
@@ -7,15 +7,9 @@ import (
 	"github.com/ipfs/go-log"
 )
 
-var logger = log.Logger("im-uploader")
+var logger = log.Logger("im-file")
 
 const maxFileByteSize = 1048576
-
-type Cid string
-
-type Cipher interface {
-	Encrypt(data []byte) ([]byte, error)
-}
 
 type Storage interface {
 	Store(data []byte) (string, error)
@@ -33,7 +27,7 @@ func NewUploader(cipher Cipher, storage Storage) *Uploader {
 	}
 }
 
-func (u *Uploader) Upload(filePath string) (Cid, error) {
+func (u *Uploader) Upload(filePath string) (string, error) {
 	logger.Infof("starting uploading file [%v]", filePath)
 
 	fileBytes, err := ioutil.ReadFile(filePath)
@@ -67,7 +61,7 @@ func (u *Uploader) Upload(filePath string) (Cid, error) {
 		len(fileEncryptedBytes),
 	)
 
-	cid, err := u.storage.Store(fileEncryptedBytes)
+	fileCid, err := u.storage.Store(fileEncryptedBytes)
 	if err != nil {
 		return "", fmt.Errorf("could not store file [%v]: [%v]", filePath, err)
 	}
@@ -76,8 +70,8 @@ func (u *Uploader) Upload(filePath string) (Cid, error) {
 		"file [%v] has been stored successfully; "+
 			"content identifier: [%v]",
 		filePath,
-		cid,
+		fileCid,
 	)
 
-	return Cid(cid), nil
+	return fileCid, nil
 }
