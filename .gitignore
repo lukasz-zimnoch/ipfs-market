@@ -4,17 +4,17 @@
 *.iml
 *.ipr
 
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-/build/
-
 ### VS Code ###
 .vscode/
 
-### Other ###
+### Miscellaneous ###
 workdir
 ipfs-market
+
+### NPM ###
+node_modules/
+
+### Solidity ###
+/solidity/.openzeppelin/dev-*.json
+/solidity/.openzeppelin/.session
+/solidity/build/

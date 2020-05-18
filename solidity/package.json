@@ -1,0 +1,10 @@
+{
+  "name": "ipfs-market",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {},
+  "dependencies": {
+    "@openzeppelin/cli": "^2.8.2",
+    "ganache-cli": "^6.9.1"
+  }
+}
