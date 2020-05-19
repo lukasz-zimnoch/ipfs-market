@@ -3,7 +3,10 @@ package cmd
 import (
 	"github.com/lukasz-zimnoch/ipfs-market/pkg/process"
 	"github.com/urfave/cli"
+	"math/big"
 )
+
+const defaultFilePrice = 100000000000000000 //0.1 ETH
 
 var UploadCommand = cli.Command{
 	Name:   "upload",
@@ -12,6 +15,11 @@ var UploadCommand = cli.Command{
 		&cli.StringFlag{
 			Name:  "file,f",
 			Usage: "file name",
+		},
+		&cli.Int64Flag{
+			Name:  "price,p",
+			Value: defaultFilePrice,
+			Usage: "file price in WEI",
 		},
 	},
 }
@@ -23,10 +31,20 @@ var UploadCommand = cli.Command{
 func Upload(c *cli.Context) error {
 	ethNodeUrl := c.GlobalString("eth-node")
 	ethPrivateKey := c.GlobalString("eth-private-key")
+	ipfsMarketContractAddress := c.GlobalString("ipfs-market-contract")
 	storageUrl := c.GlobalString("storage")
 	workdir := c.GlobalString("workdir")
+
 	file := c.String("file")
 	filePath := workdir + "/" + file
+	filePrice := big.NewInt(c.Int64("price"))
 
-	return process.Upload(ethNodeUrl, ethPrivateKey, storageUrl, filePath)
+	return process.Upload(
+		ethNodeUrl,
+		ethPrivateKey,
+		ipfsMarketContractAddress,
+		storageUrl,
+		filePath,
+		filePrice,
+	)
 }

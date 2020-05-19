@@ -1,29 +1,44 @@
 package chain
 
 import (
-	"context"
+	"encoding/hex"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/lukasz-zimnoch/ipfs-market/pkg/chain/gen/contracts"
+	"github.com/ipfs/go-log"
+	"github.com/lukasz-zimnoch/ipfs-market/pkg/chain/ethereum_gen/contracts"
 	"math/big"
-	"time"
+	"strings"
 )
+
+var logger = log.Logger("im-eth")
 
 type EthereumClient struct {
 	client             *ethclient.Client
+	transactor         *bind.TransactOpts
 	ipfsMarketContract *contracts.IpfsMarket
 }
 
-func NewEthereumClient(url string) (*EthereumClient, error) {
+func NewEthereumClient(
+	url string,
+	privateKeyBytes []byte,
+	ipfsMarketContractAddress string,
+) (*EthereumClient, error) {
 	client, err := ethclient.Dial(url)
 	if err != nil {
 		return nil, err
 	}
 
-	// TODO 2: Take address from config.
+	privateKey, err := crypto.ToECDSA(privateKeyBytes)
+	if err != nil {
+		return nil, err
+	}
+
+	transactor := bind.NewKeyedTransactor(privateKey)
+
 	ipfsMarketContract, err := contracts.NewIpfsMarket(
-		common.HexToAddress("0x97B08a01aA799861e2a736a1e2E40E6E548Da647"),
+		common.HexToAddress(ipfsMarketContractAddress),
 		client,
 	)
 	if err != nil {
@@ -32,20 +47,33 @@ func NewEthereumClient(url string) (*EthereumClient, error) {
 
 	return &EthereumClient{
 		client:             client,
+		transactor:         transactor,
 		ipfsMarketContract: ipfsMarketContract,
 	}, nil
 }
 
-func (ec *EthereumClient) Publish(hash string, accessKey []byte) {
-	// TODO 3: Take price from config.
-	price := big.NewInt(100000000000000000)
+func (ec *EthereumClient) Publish(
+	cid string,
+	accessKey []byte,
+	price *big.Int,
+) (string, error) {
+	transaction, err := ec.ipfsMarketContract.Publish(
+		ec.transactor,
+		cid,
+		accessKey,
+		price,
+	)
+	if err != nil {
+		return "", err
+	}
 
-	// TODO 4: Do we need to use this context?
-	ctx, cancelCtx := context.WithTimeout(context.Background(), 1*time.Minute)
-	defer cancelCtx()
+	return transaction.Hash().Hex(), nil
+}
 
-	opts := &bind.TransactOpts{Context: ctx}
+func DecodeEthPrivateKey(keyHex string) ([]byte, error) {
+	if strings.HasPrefix(keyHex, "0x") {
+		keyHex = keyHex[2:]
+	}
 
-	// TODO 5: Check transaction outcome.
-	ec.ipfsMarketContract.Publish(opts, hash, accessKey, price)
+	return hex.DecodeString(keyHex)
 }

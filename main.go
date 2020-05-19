@@ -32,6 +32,10 @@ func main() {
 			Usage: "ethereum account private key",
 		},
 		cli.StringFlag{
+			Name:  "ipfs-market-contract,imc",
+			Usage: "address of the IpfsMarket smart contract",
+		},
+		cli.StringFlag{
 			Name:  "storage,s",
 			Value: defaultStorageUrl,
 			Usage: "url to the storage node",

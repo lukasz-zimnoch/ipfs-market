@@ -11,15 +11,15 @@ contract IpfsMarket {
     mapping (string => Publication) publications;
 
     function publish(
-        string memory hash,
+        string memory cid,
         bytes memory accessKey,
         uint256 price
     ) public {
         require(
-            publications[hash].author == address(0),
-            "Publication with given hash already exists"
+            publications[cid].author == address(0),
+            "Publication with given CID already exists"
         );
 
-        publications[hash] = Publication(msg.sender, accessKey, price);
+        publications[cid] = Publication(msg.sender, accessKey, price);
     }
 }

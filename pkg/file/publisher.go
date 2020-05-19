@@ -1,9 +1,12 @@
 package file
 
-import "fmt"
+import (
+	"fmt"
+	"math/big"
+)
 
 type Chain interface {
-	Publish(cid string, accessKey []byte)
+	Publish(cid string, accessKey []byte, price *big.Int) (string, error)
 }
 
 type Publisher struct {
@@ -18,13 +21,23 @@ func NewPublisher(cipher Cipher, chain Chain) *Publisher {
 	}
 }
 
-func (p *Publisher) Publish(cid string, accessKey []byte) error {
+func (p *Publisher) Publish(cid string, accessKey []byte, price *big.Int) error {
 	encryptedAccessKey, err := p.cipher.Encrypt(accessKey[:])
 	if err != nil {
 		return fmt.Errorf("could not encrypt key: [%v]", err)
 	}
 
-	p.chain.Publish(cid, encryptedAccessKey)
+	transactionHash, err := p.chain.Publish(cid, encryptedAccessKey, price)
+	if err != nil {
+		return fmt.Errorf("could not publish CID [%v]: [%v]", cid, err)
+	}
+
+	logger.Infof(
+		"CID [%v] has been published successfully; "+
+			"transaction hash on-chain: [%v]",
+		cid,
+		transactionHash,
+	)
 
 	return nil
 }

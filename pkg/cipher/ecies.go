@@ -1,9 +1,6 @@
 package cipher
 
 import (
-	"fmt"
-	"strings"
-
 	eciesgo "github.com/ecies/go"
 )
 
@@ -11,17 +8,10 @@ type Ecies struct {
 	privateKey *eciesgo.PrivateKey
 }
 
-func NewEcies(privateKeyHex string) (*Ecies, error) {
-	if strings.HasPrefix(privateKeyHex, "0x") {
-		privateKeyHex = privateKeyHex[2:]
-	}
+func NewEcies(privateKeyBytes []byte) *Ecies {
+	privateKey := eciesgo.NewPrivateKeyFromBytes(privateKeyBytes)
 
-	privateKey, err := eciesgo.NewPrivateKeyFromHex(privateKeyHex)
-	if err != nil {
-		return nil, fmt.Errorf("could not parse private key: [%v]", err)
-	}
-
-	return &Ecies{privateKey}, nil
+	return &Ecies{privateKey}
 }
 
 func (r *Ecies) Encrypt(data []byte) ([]byte, error) {
