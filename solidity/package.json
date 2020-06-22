@@ -5,6 +5,7 @@
   "scripts": {},
   "dependencies": {
     "@openzeppelin/cli": "^2.8.2",
+    "@openzeppelin/contracts": "^3.0.2",
     "ganache-cli": "^6.9.1"
   }
 }
