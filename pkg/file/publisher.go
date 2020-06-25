@@ -5,10 +5,6 @@ import (
 	"math/big"
 )
 
-type Chain interface {
-	Publish(cid string, accessKey []byte, price *big.Int) (string, error)
-}
-
 type Publisher struct {
 	cipher Cipher
 	chain  Chain
@@ -22,6 +18,8 @@ func NewPublisher(cipher Cipher, chain Chain) *Publisher {
 }
 
 func (p *Publisher) Publish(cid string, accessKey []byte, price *big.Int) error {
+	logger.Infof("starting publishing CID [%v]", cid)
+
 	encryptedAccessKey, err := p.cipher.Encrypt(accessKey[:])
 	if err != nil {
 		return fmt.Errorf("could not encrypt key: [%v]", err)

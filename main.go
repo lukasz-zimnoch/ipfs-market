@@ -49,6 +49,7 @@ func main() {
 
 	app.Commands = []cli.Command{
 		cmd.UploadCommand,
+		cmd.PurchaseCommand,
 	}
 
 	err := app.Run(os.Args)

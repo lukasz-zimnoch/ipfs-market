@@ -118,4 +118,17 @@ contract IpfsMarket is PullPayment {
 
         _asyncTransfer(publications[cid].author, publications[cid].price);
     }
+
+    function hasPurchased(string memory cid) public view returns (bool) {
+        return publications[cid].purchasersPublicKeys[msg.sender].length > 0;
+    }
+
+    function getAccessKey(string memory cid) public view returns (bytes memory) {
+        require(
+            publications[cid].author != address(0),
+            "Publication with given CID doesn't exists"
+        );
+
+        return publications[cid].purchasersAccessKeys[msg.sender];
+    }
 }

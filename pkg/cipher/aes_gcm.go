@@ -34,3 +34,9 @@ func (ag *AesGcm) Encrypt(data []byte) ([]byte, error) {
 
 	return ag.Seal(nil, nonce, data, nil), nil
 }
+
+func (ag *AesGcm) Decrypt(data []byte) ([]byte, error) {
+	nonce, data := data[:ag.NonceSize()], data[ag.NonceSize():]
+
+	return ag.Open(nil, nonce, data, nil)
+}

@@ -70,10 +70,58 @@ func (ec *EthereumClient) Publish(
 	return transaction.Hash().Hex(), nil
 }
 
-func DecodeEthPrivateKey(keyHex string) ([]byte, error) {
-	if strings.HasPrefix(keyHex, "0x") {
-		keyHex = keyHex[2:]
+func (ec *EthereumClient) Purchase(
+	cid string,
+	publicKey []byte,
+) (string, error) {
+	price, err := ec.ipfsMarketContract.GetPrice(nil, cid)
+	if err != nil {
+		return "", err
 	}
 
-	return hex.DecodeString(keyHex)
+	// Copy the original transactor.
+	tempTransactor := new(bind.TransactOpts)
+	*tempTransactor = *ec.transactor
+	tempTransactor.Value = price
+
+	transaction, err := ec.ipfsMarketContract.Purchase(
+		tempTransactor,
+		cid,
+		publicKey,
+	)
+	if err != nil {
+		return "", err
+	}
+
+	return transaction.Hash().Hex(), nil
+}
+
+func (ec *EthereumClient) HasPurchased(cid string) (bool, error) {
+	return ec.ipfsMarketContract.HasPurchased(nil, cid)
+}
+
+func (ec *EthereumClient) GetAccessKey(cid string) ([]byte, error) {
+	return ec.ipfsMarketContract.GetAccessKey(nil, cid)
+}
+
+func DecodeEthPrivateKey(privateKeyHex string) ([]byte, error) {
+	if strings.HasPrefix(privateKeyHex, "0x") {
+		privateKeyHex = privateKeyHex[2:]
+	}
+
+	return hex.DecodeString(privateKeyHex)
+}
+
+func DeriveEthPublicKey(privateKeyHex string) ([]byte, error) {
+	privateKeyBytes, err := DecodeEthPrivateKey(privateKeyHex)
+	if err != nil {
+		return nil, err
+	}
+
+	privateKey, err := crypto.ToECDSA(privateKeyBytes)
+	if err != nil {
+		return nil, err
+	}
+
+	return crypto.FromECDSAPub(&privateKey.PublicKey), nil
 }

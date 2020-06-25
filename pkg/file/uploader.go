@@ -3,17 +3,9 @@ package file
 import (
 	"fmt"
 	"io/ioutil"
-
-	"github.com/ipfs/go-log"
 )
 
-var logger = log.Logger("im-file")
-
 const maxFileByteSize = 1048576
-
-type Storage interface {
-	Store(data []byte) (string, error)
-}
 
 type Uploader struct {
 	cipher  Cipher

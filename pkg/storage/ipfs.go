@@ -17,3 +17,7 @@ func NewIpfs(url string) *Ipfs {
 func (i *Ipfs) Store(data []byte) (string, error) {
 	return i.Add(bytes.NewReader(data))
 }
+
+func (i *Ipfs) GetData(cid string) ([]byte, error) {
+	return nil, nil
+}

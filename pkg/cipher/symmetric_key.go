@@ -16,3 +16,11 @@ func GenerateSymmetricKey() (SymmetricKey, error) {
 
 	return key, nil
 }
+
+func SymmetricKeyFromSlice(keySlice []byte) SymmetricKey {
+	var key SymmetricKey
+
+	copy(key[:], keySlice)
+
+	return key
+}

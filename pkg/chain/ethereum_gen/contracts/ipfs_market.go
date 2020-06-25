@@ -28,29 +28,7 @@ var (
 )
 
 // IpfsMarketABI is the input ABI used to generate the binding from.
-const IpfsMarketABI = "[{\"constant\":false,\"inputs\":[{\"internalType\":\"string\",\"name\":\"cid\",\"type\":\"string\"},{\"internalType\":\"bytes\",\"name\":\"accessKey\",\"type\":\"bytes\"},{\"internalType\":\"uint256\",\"name\":\"price\",\"type\":\"uint256\"}],\"name\":\"publish\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
-
-// IpfsMarketFuncSigs maps the 4-byte function signature to its string representation.
-var IpfsMarketFuncSigs = map[string]string{
-	"449c72a9": "publish(string,bytes,uint256)",
-}
-
-// IpfsMarketBin is the compiled bytecode used for deploying new contracts.
-var IpfsMarketBin = "0x608060405234801561001057600080fd5b506103da806100206000396000f3fe608060405234801561001057600080fd5b506004361061002b5760003560e01c8063449c72a914610030575b600080fd5b61015f6004803603606081101561004657600080fd5b81019060208101813564010000000081111561006157600080fd5b82018360208201111561007357600080fd5b8035906020019184600183028401116401000000008311171561009557600080fd5b91908080601f01602080910402602001604051908101604052809392919081815260200183838082843760009201919091525092959493602081019350359150506401000000008111156100e857600080fd5b8201836020820111156100fa57600080fd5b8035906020019184600183028401116401000000008311171561011c57600080fd5b91908080601f0160208091040260200160405190810160405280939291908181526020018383808284376000920191909152509295505091359250610161915050565b005b60006001600160a01b03166000846040518082805190602001908083835b6020831061019e5780518252601f19909201916020918201910161017f565b51815160209384036101000a60001901801990921691161790529201948552506040519384900301909220546001600160a01b031692909214915061021690505760405162461bcd60e51b815260040180806020018281038252602981526020018061037d6029913960400191505060405180910390fd5b6040518060600160405280336001600160a01b03168152602001838152602001828152506000846040518082805190602001908083835b6020831061026c5780518252601f19909201916020918201910161024d565b51815160209384036101000a6000190180199092169116179052920194855250604051938490038101909320845181546001600160a01b0319166001600160a01b0390911617815584840151805191946102ce945060018601935001906102e1565b5060408201518160020155905050505050565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f1061032257805160ff191683800117855561034f565b8280016001018555821561034f579182015b8281111561034f578251825591602001919060010190610334565b5061035b92915061035f565b5090565b61037991905b8082111561035b5760008155600101610365565b9056fe5075626c69636174696f6e207769746820676976656e2043494420616c726561647920657869737473a265627a7a723158204fc9ab343521a20476376cd13a61e8cb68dd2e85017005fdb4cdc7401f5bf00964736f6c63430005110032"
-
-// DeployIpfsMarket deploys a new Ethereum contract, binding an instance of IpfsMarket to it.
-func DeployIpfsMarket(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *IpfsMarket, error) {
-	parsed, err := abi.JSON(strings.NewReader(IpfsMarketABI))
-	if err != nil {
-		return common.Address{}, nil, nil, err
-	}
-
-	address, tx, contract, err := bind.DeployContract(auth, parsed, common.FromHex(IpfsMarketBin), backend)
-	if err != nil {
-		return common.Address{}, nil, nil, err
-	}
-	return address, tx, &IpfsMarket{IpfsMarketCaller: IpfsMarketCaller{contract: contract}, IpfsMarketTransactor: IpfsMarketTransactor{contract: contract}, IpfsMarketFilterer: IpfsMarketFilterer{contract: contract}}, nil
-}
+const IpfsMarketABI = "[{\"inputs\":[{\"internalType\":\"string\",\"name\":\"cid\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"purchaser\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"accessKey\",\"type\":\"bytes\"}],\"name\":\"answerPurchase\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"cid\",\"type\":\"string\"}],\"name\":\"getAccessKey\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"stateMutability\":\"view\",\"constant\":true,\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"cid\",\"type\":\"string\"}],\"name\":\"getPrice\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"constant\":true,\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"cid\",\"type\":\"string\"}],\"name\":\"hasPurchased\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"constant\":true,\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"dest\",\"type\":\"address\"}],\"name\":\"payments\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"constant\":true,\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"cid\",\"type\":\"string\"},{\"internalType\":\"bytes\",\"name\":\"accessKey\",\"type\":\"bytes\"},{\"internalType\":\"uint256\",\"name\":\"price\",\"type\":\"uint256\"}],\"name\":\"publish\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"cid\",\"type\":\"string\"},{\"internalType\":\"bytes\",\"name\":\"publicKey\",\"type\":\"bytes\"}],\"name\":\"purchase\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"addresspayable\",\"name\":\"payee\",\"type\":\"address\"}],\"name\":\"withdrawPayments\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
 
 // IpfsMarket is an auto generated Go binding around an Ethereum contract.
 type IpfsMarket struct {
@@ -194,6 +172,131 @@ func (_IpfsMarket *IpfsMarketTransactorRaw) Transact(opts *bind.TransactOpts, me
 	return _IpfsMarket.Contract.contract.Transact(opts, method, params...)
 }
 
+// GetAccessKey is a free data retrieval call binding the contract method 0x998ae61e.
+//
+// Solidity: function getAccessKey(string cid) constant returns(bytes)
+func (_IpfsMarket *IpfsMarketCaller) GetAccessKey(opts *bind.CallOpts, cid string) ([]byte, error) {
+	var (
+		ret0 = new([]byte)
+	)
+	out := ret0
+	err := _IpfsMarket.contract.Call(opts, out, "getAccessKey", cid)
+	return *ret0, err
+}
+
+// GetAccessKey is a free data retrieval call binding the contract method 0x998ae61e.
+//
+// Solidity: function getAccessKey(string cid) constant returns(bytes)
+func (_IpfsMarket *IpfsMarketSession) GetAccessKey(cid string) ([]byte, error) {
+	return _IpfsMarket.Contract.GetAccessKey(&_IpfsMarket.CallOpts, cid)
+}
+
+// GetAccessKey is a free data retrieval call binding the contract method 0x998ae61e.
+//
+// Solidity: function getAccessKey(string cid) constant returns(bytes)
+func (_IpfsMarket *IpfsMarketCallerSession) GetAccessKey(cid string) ([]byte, error) {
+	return _IpfsMarket.Contract.GetAccessKey(&_IpfsMarket.CallOpts, cid)
+}
+
+// GetPrice is a free data retrieval call binding the contract method 0x524f3889.
+//
+// Solidity: function getPrice(string cid) constant returns(uint256)
+func (_IpfsMarket *IpfsMarketCaller) GetPrice(opts *bind.CallOpts, cid string) (*big.Int, error) {
+	var (
+		ret0 = new(*big.Int)
+	)
+	out := ret0
+	err := _IpfsMarket.contract.Call(opts, out, "getPrice", cid)
+	return *ret0, err
+}
+
+// GetPrice is a free data retrieval call binding the contract method 0x524f3889.
+//
+// Solidity: function getPrice(string cid) constant returns(uint256)
+func (_IpfsMarket *IpfsMarketSession) GetPrice(cid string) (*big.Int, error) {
+	return _IpfsMarket.Contract.GetPrice(&_IpfsMarket.CallOpts, cid)
+}
+
+// GetPrice is a free data retrieval call binding the contract method 0x524f3889.
+//
+// Solidity: function getPrice(string cid) constant returns(uint256)
+func (_IpfsMarket *IpfsMarketCallerSession) GetPrice(cid string) (*big.Int, error) {
+	return _IpfsMarket.Contract.GetPrice(&_IpfsMarket.CallOpts, cid)
+}
+
+// HasPurchased is a free data retrieval call binding the contract method 0x0512b8ab.
+//
+// Solidity: function hasPurchased(string cid) constant returns(bool)
+func (_IpfsMarket *IpfsMarketCaller) HasPurchased(opts *bind.CallOpts, cid string) (bool, error) {
+	var (
+		ret0 = new(bool)
+	)
+	out := ret0
+	err := _IpfsMarket.contract.Call(opts, out, "hasPurchased", cid)
+	return *ret0, err
+}
+
+// HasPurchased is a free data retrieval call binding the contract method 0x0512b8ab.
+//
+// Solidity: function hasPurchased(string cid) constant returns(bool)
+func (_IpfsMarket *IpfsMarketSession) HasPurchased(cid string) (bool, error) {
+	return _IpfsMarket.Contract.HasPurchased(&_IpfsMarket.CallOpts, cid)
+}
+
+// HasPurchased is a free data retrieval call binding the contract method 0x0512b8ab.
+//
+// Solidity: function hasPurchased(string cid) constant returns(bool)
+func (_IpfsMarket *IpfsMarketCallerSession) HasPurchased(cid string) (bool, error) {
+	return _IpfsMarket.Contract.HasPurchased(&_IpfsMarket.CallOpts, cid)
+}
+
+// Payments is a free data retrieval call binding the contract method 0xe2982c21.
+//
+// Solidity: function payments(address dest) constant returns(uint256)
+func (_IpfsMarket *IpfsMarketCaller) Payments(opts *bind.CallOpts, dest common.Address) (*big.Int, error) {
+	var (
+		ret0 = new(*big.Int)
+	)
+	out := ret0
+	err := _IpfsMarket.contract.Call(opts, out, "payments", dest)
+	return *ret0, err
+}
+
+// Payments is a free data retrieval call binding the contract method 0xe2982c21.
+//
+// Solidity: function payments(address dest) constant returns(uint256)
+func (_IpfsMarket *IpfsMarketSession) Payments(dest common.Address) (*big.Int, error) {
+	return _IpfsMarket.Contract.Payments(&_IpfsMarket.CallOpts, dest)
+}
+
+// Payments is a free data retrieval call binding the contract method 0xe2982c21.
+//
+// Solidity: function payments(address dest) constant returns(uint256)
+func (_IpfsMarket *IpfsMarketCallerSession) Payments(dest common.Address) (*big.Int, error) {
+	return _IpfsMarket.Contract.Payments(&_IpfsMarket.CallOpts, dest)
+}
+
+// AnswerPurchase is a paid mutator transaction binding the contract method 0xaf1cd463.
+//
+// Solidity: function answerPurchase(string cid, address purchaser, bytes accessKey) returns()
+func (_IpfsMarket *IpfsMarketTransactor) AnswerPurchase(opts *bind.TransactOpts, cid string, purchaser common.Address, accessKey []byte) (*types.Transaction, error) {
+	return _IpfsMarket.contract.Transact(opts, "answerPurchase", cid, purchaser, accessKey)
+}
+
+// AnswerPurchase is a paid mutator transaction binding the contract method 0xaf1cd463.
+//
+// Solidity: function answerPurchase(string cid, address purchaser, bytes accessKey) returns()
+func (_IpfsMarket *IpfsMarketSession) AnswerPurchase(cid string, purchaser common.Address, accessKey []byte) (*types.Transaction, error) {
+	return _IpfsMarket.Contract.AnswerPurchase(&_IpfsMarket.TransactOpts, cid, purchaser, accessKey)
+}
+
+// AnswerPurchase is a paid mutator transaction binding the contract method 0xaf1cd463.
+//
+// Solidity: function answerPurchase(string cid, address purchaser, bytes accessKey) returns()
+func (_IpfsMarket *IpfsMarketTransactorSession) AnswerPurchase(cid string, purchaser common.Address, accessKey []byte) (*types.Transaction, error) {
+	return _IpfsMarket.Contract.AnswerPurchase(&_IpfsMarket.TransactOpts, cid, purchaser, accessKey)
+}
+
 // Publish is a paid mutator transaction binding the contract method 0x449c72a9.
 //
 // Solidity: function publish(string cid, bytes accessKey, uint256 price) returns()
@@ -213,4 +316,46 @@ func (_IpfsMarket *IpfsMarketSession) Publish(cid string, accessKey []byte, pric
 // Solidity: function publish(string cid, bytes accessKey, uint256 price) returns()
 func (_IpfsMarket *IpfsMarketTransactorSession) Publish(cid string, accessKey []byte, price *big.Int) (*types.Transaction, error) {
 	return _IpfsMarket.Contract.Publish(&_IpfsMarket.TransactOpts, cid, accessKey, price)
+}
+
+// Purchase is a paid mutator transaction binding the contract method 0xf5dd4e9c.
+//
+// Solidity: function purchase(string cid, bytes publicKey) returns()
+func (_IpfsMarket *IpfsMarketTransactor) Purchase(opts *bind.TransactOpts, cid string, publicKey []byte) (*types.Transaction, error) {
+	return _IpfsMarket.contract.Transact(opts, "purchase", cid, publicKey)
+}
+
+// Purchase is a paid mutator transaction binding the contract method 0xf5dd4e9c.
+//
+// Solidity: function purchase(string cid, bytes publicKey) returns()
+func (_IpfsMarket *IpfsMarketSession) Purchase(cid string, publicKey []byte) (*types.Transaction, error) {
+	return _IpfsMarket.Contract.Purchase(&_IpfsMarket.TransactOpts, cid, publicKey)
+}
+
+// Purchase is a paid mutator transaction binding the contract method 0xf5dd4e9c.
+//
+// Solidity: function purchase(string cid, bytes publicKey) returns()
+func (_IpfsMarket *IpfsMarketTransactorSession) Purchase(cid string, publicKey []byte) (*types.Transaction, error) {
+	return _IpfsMarket.Contract.Purchase(&_IpfsMarket.TransactOpts, cid, publicKey)
+}
+
+// WithdrawPayments is a paid mutator transaction binding the contract method 0x31b3eb94.
+//
+// Solidity: function withdrawPayments(address payee) returns()
+func (_IpfsMarket *IpfsMarketTransactor) WithdrawPayments(opts *bind.TransactOpts, payee common.Address) (*types.Transaction, error) {
+	return _IpfsMarket.contract.Transact(opts, "withdrawPayments", payee)
+}
+
+// WithdrawPayments is a paid mutator transaction binding the contract method 0x31b3eb94.
+//
+// Solidity: function withdrawPayments(address payee) returns()
+func (_IpfsMarket *IpfsMarketSession) WithdrawPayments(payee common.Address) (*types.Transaction, error) {
+	return _IpfsMarket.Contract.WithdrawPayments(&_IpfsMarket.TransactOpts, payee)
+}
+
+// WithdrawPayments is a paid mutator transaction binding the contract method 0x31b3eb94.
+//
+// Solidity: function withdrawPayments(address payee) returns()
+func (_IpfsMarket *IpfsMarketTransactorSession) WithdrawPayments(payee common.Address) (*types.Transaction, error) {
+	return _IpfsMarket.Contract.WithdrawPayments(&_IpfsMarket.TransactOpts, payee)
 }
