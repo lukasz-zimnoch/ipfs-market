@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/lukasz-zimnoch/ipfs-market/pkg/process"
+	"github.com/lukasz-zimnoch/ipfs-market/pkg/service"
 	"github.com/urfave/cli"
 )
 
@@ -18,7 +18,7 @@ var PurchaseCommand = cli.Command{
 
 // TODO: refactoring:
 //  - config extractor
-//  - processes as objects?
+//  - services as objects?
 //  - use config object instead of separate params
 func Purchase(c *cli.Context) error {
 	ethNodeUrl := c.GlobalString("eth-node")
@@ -28,7 +28,7 @@ func Purchase(c *cli.Context) error {
 
 	fileCid := c.String("file-cid")
 
-	return process.Purchase(
+	return service.Purchase(
 		ethNodeUrl,
 		ethPrivateKey,
 		ipfsMarketContractAddress,
