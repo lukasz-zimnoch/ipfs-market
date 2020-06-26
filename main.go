@@ -9,9 +9,7 @@ import (
 )
 
 const (
-	defaultEthNodeUrl  = "http://localhost:8545"
-	defaultStorageUrl  = "http://localhost:5001"
-	defaultWorkdirPath = "./workdir"
+	defaultConfigPath = "./configs/config.yml"
 )
 
 var logger = log.Logger("im-main")
@@ -23,27 +21,9 @@ func main() {
 
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
-			Name:  "eth-node,en",
-			Value: defaultEthNodeUrl,
-			Usage: "url to the ethereum node",
-		},
-		cli.StringFlag{
-			Name:  "eth-private-key,epk",
-			Usage: "ethereum account private key",
-		},
-		cli.StringFlag{
-			Name:  "ipfs-market-contract,imc",
-			Usage: "address of the IpfsMarket smart contract",
-		},
-		cli.StringFlag{
-			Name:  "storage,s",
-			Value: defaultStorageUrl,
-			Usage: "url to the storage node",
-		},
-		cli.StringFlag{
-			Name:  "workdir,w",
-			Value: defaultWorkdirPath,
-			Usage: "full path to the working directory",
+			Name:  "config,c",
+			Value: defaultConfigPath,
+			Usage: "path to the config YAML file",
 		},
 	}
 

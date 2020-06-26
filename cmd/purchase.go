@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/lukasz-zimnoch/ipfs-market/configs"
 	"github.com/lukasz-zimnoch/ipfs-market/pkg/service"
 	"github.com/urfave/cli"
 )
@@ -16,23 +17,13 @@ var PurchaseCommand = cli.Command{
 	},
 }
 
-// TODO: refactoring:
-//  - config extractor
-//  - services as objects?
-//  - use config object instead of separate params
 func Purchase(c *cli.Context) error {
-	ethNodeUrl := c.GlobalString("eth-node")
-	ethPrivateKey := c.GlobalString("eth-private-key")
-	ipfsMarketContractAddress := c.GlobalString("ipfs-market-contract")
-	storageUrl := c.GlobalString("storage")
+	config, err := configs.ReadConfig(c.GlobalString("config"))
+	if err != nil {
+		return err
+	}
 
 	fileCid := c.String("file-cid")
 
-	return service.Purchase(
-		ethNodeUrl,
-		ethPrivateKey,
-		ipfsMarketContractAddress,
-		storageUrl,
-		fileCid,
-	)
+	return service.Purchase(config, fileCid)
 }

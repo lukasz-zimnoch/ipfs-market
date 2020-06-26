@@ -8,4 +8,5 @@ require (
 	github.com/ipfs/go-ipfs-api v0.0.3
 	github.com/ipfs/go-log v1.0.3
 	github.com/urfave/cli v1.22.4
+	gopkg.in/yaml.v2 v2.2.2
 )

@@ -1,0 +1,8 @@
+ethereum:
+  url: "http://localhost:8545"
+  privateKey: "0x372cb824360ac92ac3f8d934bde516d48283ea35b18893426cefdbb8449e894e"
+  ipfsMarketContract: "0xd4c71a7835af9a411Ade526E3430E8e8C625a62E"
+
+storage:
+  url: "http://localhost:5001"
+  workdir: "./workdir"

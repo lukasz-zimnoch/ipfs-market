@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/lukasz-zimnoch/ipfs-market/configs"
 	"github.com/lukasz-zimnoch/ipfs-market/pkg/service"
 	"github.com/urfave/cli"
 	"math/big"
@@ -24,27 +25,14 @@ var UploadCommand = cli.Command{
 	},
 }
 
-// TODO: refactoring:
-//  - config extractor
-//  - services as objects?
-//  - use config object instead of separate params
 func Upload(c *cli.Context) error {
-	ethNodeUrl := c.GlobalString("eth-node")
-	ethPrivateKey := c.GlobalString("eth-private-key")
-	ipfsMarketContractAddress := c.GlobalString("ipfs-market-contract")
-	storageUrl := c.GlobalString("storage")
-	workdir := c.GlobalString("workdir")
+	config, err := configs.ReadConfig(c.GlobalString("config"))
+	if err != nil {
+		return err
+	}
 
-	file := c.String("file")
-	filePath := workdir + "/" + file
+	filePath := c.String("file")
 	filePrice := big.NewInt(c.Int64("price"))
 
-	return service.Upload(
-		ethNodeUrl,
-		ethPrivateKey,
-		ipfsMarketContractAddress,
-		storageUrl,
-		filePath,
-		filePrice,
-	)
+	return service.Upload(config, filePath, filePrice)
 }
