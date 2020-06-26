@@ -22,9 +22,6 @@ func Purchase(config *configs.Config, fileCid string) error {
 		return fmt.Errorf("could not derive ethereum public key: [%v]", err)
 	}
 
-	// FIXME: remove this.
-	fmt.Printf("public key length [%v]", len(ethPublicKeyBytes))
-
 	ethereum, err := chain.NewEthereumClient(
 		config.Ethereum.URL,
 		ethPrivateKeyBytes,
@@ -38,7 +35,7 @@ func Purchase(config *configs.Config, fileCid string) error {
 
 	accessKey, err := purchaser.Purchase(fileCid, ethPublicKeyBytes)
 	if err != nil {
-		return fmt.Errorf("could purchase file: [%v]", err)
+		return fmt.Errorf("could not purchase file: [%v]", err)
 	}
 
 	aesGcmCipher, err := cipher.NewAesGcm(
@@ -50,7 +47,7 @@ func Purchase(config *configs.Config, fileCid string) error {
 
 	ipfsStorage := storage.NewIpfs(config.Storage.URL)
 
-	downloader := file.NewDownloader(aesGcmCipher, ipfsStorage)
+	downloader := file.NewDownloader(aesGcmCipher, ipfsStorage, config.Storage.Workdir)
 
 	err = downloader.Download(fileCid)
 	if err != nil {

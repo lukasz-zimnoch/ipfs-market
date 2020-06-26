@@ -109,5 +109,9 @@ func (p *Purchaser) checkAccessKey(cid string) ([]byte, bool) {
 		return nil, false
 	}
 
+	if len(accessKey) == 0 {
+		return accessKey, false
+	}
+
 	return accessKey, true
 }

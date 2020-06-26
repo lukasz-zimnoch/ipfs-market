@@ -16,7 +16,8 @@ var logger = log.Logger("im-eth")
 
 type EthereumClient struct {
 	client             *ethclient.Client
-	transactor         *bind.TransactOpts
+	transactOpts       *bind.TransactOpts
+	callOpts           *bind.CallOpts
 	ipfsMarketContract *contracts.IpfsMarket
 }
 
@@ -35,7 +36,11 @@ func NewEthereumClient(
 		return nil, err
 	}
 
-	transactor := bind.NewKeyedTransactor(privateKey)
+	transactOpts := bind.NewKeyedTransactor(privateKey)
+
+	callOpts := &bind.CallOpts{
+		From: transactOpts.From,
+	}
 
 	ipfsMarketContract, err := contracts.NewIpfsMarket(
 		common.HexToAddress(ipfsMarketContractAddress),
@@ -47,7 +52,8 @@ func NewEthereumClient(
 
 	return &EthereumClient{
 		client:             client,
-		transactor:         transactor,
+		transactOpts:       transactOpts,
+		callOpts:           callOpts,
 		ipfsMarketContract: ipfsMarketContract,
 	}, nil
 }
@@ -58,7 +64,7 @@ func (ec *EthereumClient) Publish(
 	price *big.Int,
 ) (string, error) {
 	transaction, err := ec.ipfsMarketContract.Publish(
-		ec.transactor,
+		ec.transactOpts,
 		cid,
 		accessKey,
 		price,
@@ -74,18 +80,18 @@ func (ec *EthereumClient) Purchase(
 	cid string,
 	publicKey []byte,
 ) (string, error) {
-	price, err := ec.ipfsMarketContract.GetPrice(nil, cid)
+	price, err := ec.ipfsMarketContract.GetPrice(ec.callOpts, cid)
 	if err != nil {
 		return "", err
 	}
 
-	// Copy the original transactor.
-	tempTransactor := new(bind.TransactOpts)
-	*tempTransactor = *ec.transactor
-	tempTransactor.Value = price
+	// Copy the original transactOpts.
+	tempTransactOpts := new(bind.TransactOpts)
+	*tempTransactOpts = *ec.transactOpts
+	tempTransactOpts.Value = price
 
 	transaction, err := ec.ipfsMarketContract.Purchase(
-		tempTransactor,
+		tempTransactOpts,
 		cid,
 		publicKey,
 	)
@@ -97,11 +103,11 @@ func (ec *EthereumClient) Purchase(
 }
 
 func (ec *EthereumClient) HasPurchased(cid string) (bool, error) {
-	return ec.ipfsMarketContract.HasPurchased(nil, cid)
+	return ec.ipfsMarketContract.HasPurchased(ec.callOpts, cid)
 }
 
 func (ec *EthereumClient) GetAccessKey(cid string) ([]byte, error) {
-	return ec.ipfsMarketContract.GetAccessKey(nil, cid)
+	return ec.ipfsMarketContract.GetAccessKey(ec.callOpts, cid)
 }
 
 func DecodeEthPrivateKey(privateKeyHex string) ([]byte, error) {
@@ -123,5 +129,5 @@ func DeriveEthPublicKey(privateKeyHex string) ([]byte, error) {
 		return nil, err
 	}
 
-	return crypto.FromECDSAPub(&privateKey.PublicKey), nil
+	return crypto.FromECDSAPub(&privateKey.PublicKey)[1:], nil
 }

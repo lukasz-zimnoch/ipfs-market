@@ -9,9 +9,10 @@ import (
 type Downloader struct {
 	cipher  Cipher
 	storage Storage
+	workdir string
 }
 
-func NewDownloader(cipher Cipher, storage Storage) *Downloader {
+func NewDownloader(cipher Cipher, storage Storage, workdir string) *Downloader {
 	return &Downloader{
 		cipher:  cipher,
 		storage: storage,
@@ -39,7 +40,7 @@ func (d *Downloader) Download(cid string) error {
 		)
 	}
 
-	err = ioutil.WriteFile(cid, decryptedData, os.ModePerm)
+	err = ioutil.WriteFile(d.workdir+"/"+cid, decryptedData, os.ModePerm)
 	if err != nil {
 		return fmt.Errorf(
 			"could not write file for CID [%v]: [%v]",
