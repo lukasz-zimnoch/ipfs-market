@@ -10,7 +10,7 @@ import (
 	"math/big"
 )
 
-func Upload(
+func Publish(
 	config *configs.Config,
 	filePath string,
 	filePrice *big.Int,

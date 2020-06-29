@@ -28,7 +28,7 @@ func main() {
 	}
 
 	app.Commands = []cli.Command{
-		cmd.UploadCommand,
+		cmd.PublishCommand,
 		cmd.PurchaseCommand,
 	}
 

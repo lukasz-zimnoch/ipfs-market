@@ -9,9 +9,9 @@ import (
 
 const defaultFilePrice = 100000000000000000 //0.1 ETH
 
-var UploadCommand = cli.Command{
-	Name:   "upload",
-	Action: Upload,
+var PublishCommand = cli.Command{
+	Name:   "publish",
+	Action: Publish,
 	Flags: []cli.Flag{
 		&cli.StringFlag{
 			Name:  "file,f",
@@ -25,7 +25,7 @@ var UploadCommand = cli.Command{
 	},
 }
 
-func Upload(c *cli.Context) error {
+func Publish(c *cli.Context) error {
 	config, err := configs.ReadConfig(c.GlobalString("config"))
 	if err != nil {
 		return err
@@ -34,5 +34,5 @@ func Upload(c *cli.Context) error {
 	filePath := c.String("file")
 	filePrice := big.NewInt(c.Int64("price"))
 
-	return service.Upload(config, filePath, filePrice)
+	return service.Publish(config, filePath, filePrice)
 }
