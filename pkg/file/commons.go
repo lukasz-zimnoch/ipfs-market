@@ -21,8 +21,13 @@ type Chain interface {
 	HasPurchased(cid string) (bool, error)
 	GetAccessKey(cid string) ([]byte, error)
 	DeriveAddress(publicKeyBytes []byte) (string, error)
+
 	SubscribePurchaseAnsweredEvent(
 		onEvent func(cid, purchaser string, accessKey []byte),
+		onError func(error),
+	) error
+	SubscribePurchaseCreatedEvent(
+		onEvent func(cid string, publicKey []byte),
 		onError func(error),
 	) error
 }

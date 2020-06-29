@@ -164,6 +164,48 @@ func (ec *EthereumClient) SubscribePurchaseAnsweredEvent(
 	return nil
 }
 
+func (ec *EthereumClient) SubscribePurchaseCreatedEvent(
+	onEvent func(cid string, publicKey []byte),
+	onError func(error),
+) error {
+	eventChannel := make(chan *contracts.IpfsMarketPurchaseCreated)
+
+	eventSubscription, err := ec.ipfsMarketContract.WatchPurchaseCreated(
+		nil,
+		eventChannel,
+	)
+	if err != nil {
+		close(eventChannel)
+		return fmt.Errorf(
+			"error creating watch for PurchaseCreated events: [%v]",
+			err,
+		)
+	}
+
+	var mutex sync.Mutex
+
+	go func() {
+		for {
+			select {
+			case event := <-eventChannel:
+				mutex.Lock()
+
+				onEvent(
+					event.Cid,
+					event.PublicKey,
+				)
+
+				mutex.Unlock()
+			case err := <-eventSubscription.Err():
+				onError(err)
+				return
+			}
+		}
+	}()
+
+	return nil
+}
+
 func DecodeEthPrivateKey(privateKeyHex string) ([]byte, error) {
 	if strings.HasPrefix(privateKeyHex, "0x") {
 		privateKeyHex = privateKeyHex[2:]

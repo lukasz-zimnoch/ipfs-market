@@ -50,13 +50,42 @@ func (p *Purchaser) Purchase(
 		)
 	}
 
+	accessKey, exists := p.checkAccessKey(cid)
+
+	if !exists {
+		accessKey, err = p.waitForAccessKey(cid, publicKey)
+		if err != nil {
+			return nil, fmt.Errorf(
+				"could not get access key for CID [%v]: [%v]",
+				cid,
+				err,
+			)
+		}
+	}
+
+	return p.cipher.Decrypt(accessKey)
+}
+
+func (p *Purchaser) checkAccessKey(cid string) ([]byte, bool) {
+	accessKey, err := p.chain.GetAccessKey(cid)
+	if err != nil {
+		return nil, false
+	}
+
+	if len(accessKey) == 0 {
+		return accessKey, false
+	}
+
+	return accessKey, true
+}
+
+func (p *Purchaser) waitForAccessKey(
+	cid string,
+	publicKey []byte,
+) ([]byte, error) {
 	address, err := p.chain.DeriveAddress(publicKey)
 	if err != nil {
-		return nil, fmt.Errorf(
-			"could not derive address for public key: [%v]: [%v]",
-			publicKey,
-			err,
-		)
+		return nil, err
 	}
 
 	accessKeyChannel := make(chan []byte)
@@ -73,22 +102,13 @@ func (p *Purchaser) Purchase(
 		},
 	)
 	if err != nil {
-		return nil, fmt.Errorf(
-			"could not create subcription to purchase answered event "+
-				"for CID [%v]: [%v]",
-			cid,
-			err,
-		)
+		return nil, err
 	}
 
 	select {
 	case accessKey := <-accessKeyChannel:
-		return p.cipher.Decrypt(accessKey)
+		return accessKey, nil
 	case err := <-errorChannel:
-		return nil, fmt.Errorf(
-			"could not get access key for CID [%v]: [%v]",
-			cid,
-			err,
-		)
+		return nil, err
 	}
 }
