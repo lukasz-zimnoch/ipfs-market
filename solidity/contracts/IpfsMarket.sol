@@ -5,16 +5,38 @@ import "@openzeppelin/contracts/payment/PullPayment.sol";
 contract IpfsMarket is PullPayment {
 
     struct Publication {
+        // Address of the author.
         address author;
+
+        // Encrypted author's access key.
         bytes authorAccessKey;
+
+        // Price in WEIs.
         uint256 price;
 
+        // List of all purchasers.
         address[] purchasers;
+
+        // Public keys submitted by the purchasers which should be used
+        // to encrypt the access key during the purchase answer.
         mapping (address => bytes) purchasersPublicKeys;
+
+        // Encrypted access keys for purchasers submitted by the author.
         mapping (address => bytes) purchasersAccessKeys;
     }
 
     mapping (string => Publication) publications;
+
+    event PurchaseCreated(
+        string cid,
+        bytes publicKey
+    );
+
+    event PurchaseAnswered(
+        string cid,
+        address purchaser,
+        bytes accessKey
+    );
 
     function publish(
         string memory cid,
@@ -76,6 +98,8 @@ contract IpfsMarket is PullPayment {
 
         publications[cid].purchasers.push(purchaser);
         publications[cid].purchasersPublicKeys[purchaser] = publicKey;
+
+        emit PurchaseCreated(cid, publicKey);
     }
 
     function publicKeyToAddress (
@@ -117,6 +141,8 @@ contract IpfsMarket is PullPayment {
         publications[cid].purchasersAccessKeys[purchaser] = accessKey;
 
         _asyncTransfer(publications[cid].author, publications[cid].price);
+
+        emit PurchaseAnswered(cid, purchaser, accessKey);
     }
 
     function hasPurchased(string memory cid) public view returns (bool) {
@@ -128,6 +154,10 @@ contract IpfsMarket is PullPayment {
             publications[cid].author != address(0),
             "Publication with given CID doesn't exists"
         );
+
+        if (publications[cid].author == msg.sender) {
+            return publications[cid].authorAccessKey;
+        }
 
         return publications[cid].purchasersAccessKeys[msg.sender];
     }

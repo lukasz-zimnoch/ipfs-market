@@ -2,6 +2,7 @@ package chain
 
 import (
 	"encoding/hex"
+	"fmt"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
@@ -10,6 +11,7 @@ import (
 	"github.com/lukasz-zimnoch/ipfs-market/pkg/chain/ethereum_gen/contracts"
 	"math/big"
 	"strings"
+	"sync"
 )
 
 var logger = log.Logger("im-eth")
@@ -108,6 +110,58 @@ func (ec *EthereumClient) HasPurchased(cid string) (bool, error) {
 
 func (ec *EthereumClient) GetAccessKey(cid string) ([]byte, error) {
 	return ec.ipfsMarketContract.GetAccessKey(ec.callOpts, cid)
+}
+
+func (ec *EthereumClient) DeriveAddress(publicKeyBytes []byte) (string, error) {
+	publicKey, err := crypto.UnmarshalPubkey(publicKeyBytes)
+	if err != nil {
+		return "", err
+	}
+
+	return crypto.PubkeyToAddress(*publicKey).Hex(), nil
+}
+
+func (ec *EthereumClient) SubscribePurchaseAnsweredEvent(
+	onEvent func(cid, purchaser string, accessKey []byte),
+	onError func(error),
+) error {
+	eventChannel := make(chan *contracts.IpfsMarketPurchaseAnswered)
+
+	eventSubscription, err := ec.ipfsMarketContract.WatchPurchaseAnswered(
+		nil,
+		eventChannel,
+	)
+	if err != nil {
+		close(eventChannel)
+		return fmt.Errorf(
+			"error creating watch for PurchaseAnswered events: [%v]",
+			err,
+		)
+	}
+
+	var mutex sync.Mutex
+
+	go func() {
+		for {
+			select {
+			case event := <-eventChannel:
+				mutex.Lock()
+
+				onEvent(
+					event.Cid,
+					event.Purchaser.Hex(),
+					event.AccessKey,
+				)
+
+				mutex.Unlock()
+			case err := <-eventSubscription.Err():
+				onError(err)
+				return
+			}
+		}
+	}()
+
+	return nil
 }
 
 func DecodeEthPrivateKey(privateKeyHex string) ([]byte, error) {
