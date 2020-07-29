@@ -30,6 +30,7 @@ func main() {
 	app.Commands = []cli.Command{
 		cmd.PublishCommand,
 		cmd.PurchaseCommand,
+		cmd.WatchCommand,
 	}
 
 	err := app.Run(os.Args)

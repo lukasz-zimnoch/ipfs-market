@@ -146,6 +146,11 @@ contract IpfsMarket is PullPayment {
     }
 
     function hasPurchased(string memory cid) public view returns (bool) {
+        require(
+            publications[cid].author != address(0),
+            "Publication with given CID doesn't exists"
+        );
+
         return publications[cid].purchasersPublicKeys[msg.sender].length > 0;
     }
 
@@ -160,5 +165,14 @@ contract IpfsMarket is PullPayment {
         }
 
         return publications[cid].purchasersAccessKeys[msg.sender];
+    }
+
+    function isAuthor(string memory cid) public view returns (bool) {
+        require(
+            publications[cid].author != address(0),
+            "Publication with given CID doesn't exists"
+        );
+
+        return publications[cid].author == msg.sender;
     }
 }

@@ -95,7 +95,25 @@ func (ec *EthereumClient) Purchase(
 	transaction, err := ec.ipfsMarketContract.Purchase(
 		tempTransactOpts,
 		cid,
-		publicKey,
+		RemovePublicKeyPrefix(publicKey),
+	)
+	if err != nil {
+		return "", err
+	}
+
+	return transaction.Hash().Hex(), nil
+}
+
+func (ec *EthereumClient) AnswerPurchase(
+	cid string,
+	purchaser string,
+	accessKey []byte,
+) (string, error) {
+	transaction, err := ec.ipfsMarketContract.AnswerPurchase(
+		ec.transactOpts,
+		cid,
+		common.HexToAddress(purchaser),
+		accessKey,
 	)
 	if err != nil {
 		return "", err
@@ -112,8 +130,12 @@ func (ec *EthereumClient) GetAccessKey(cid string) ([]byte, error) {
 	return ec.ipfsMarketContract.GetAccessKey(ec.callOpts, cid)
 }
 
+func (ec *EthereumClient) IsAuthor(cid string) (bool, error) {
+	return ec.ipfsMarketContract.IsAuthor(ec.callOpts, cid)
+}
+
 func (ec *EthereumClient) DeriveAddress(publicKeyBytes []byte) (string, error) {
-	publicKey, err := crypto.UnmarshalPubkey(publicKeyBytes)
+	publicKey, err := crypto.UnmarshalPubkey(AddPublicKeyPrefix(publicKeyBytes))
 	if err != nil {
 		return "", err
 	}
@@ -225,5 +247,21 @@ func DeriveEthPublicKey(privateKeyHex string) ([]byte, error) {
 		return nil, err
 	}
 
-	return crypto.FromECDSAPub(&privateKey.PublicKey)[1:], nil
+	return crypto.FromECDSAPub(&privateKey.PublicKey), nil
+}
+
+func RemovePublicKeyPrefix(publicKey []byte) []byte {
+	if len(publicKey) == 65 && publicKey[0] == 0x04 {
+		return publicKey[1:]
+	}
+
+	return publicKey
+}
+
+func AddPublicKeyPrefix(publicKey []byte) []byte {
+	if len(publicKey) == 64 {
+		return append([]byte{0x04}, publicKey...)
+	}
+
+	return publicKey
 }
