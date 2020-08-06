@@ -25,6 +25,7 @@ type Chain interface {
 	GetAccessKey(cid string) ([]byte, error)
 	IsAuthor(cid string) (bool, error)
 	DeriveAddress(publicKeyBytes []byte) (string, error)
+	WithdrawPayments() (string, error)
 
 	SubscribePurchaseAnsweredEvent(
 		onEvent func(cid, purchaser string, accessKey []byte),

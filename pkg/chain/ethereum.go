@@ -143,6 +143,19 @@ func (ec *EthereumClient) DeriveAddress(publicKeyBytes []byte) (string, error) {
 	return crypto.PubkeyToAddress(*publicKey).Hex(), nil
 }
 
+func (ec *EthereumClient) WithdrawPayments() (string, error) {
+	transaction, err := ec.ipfsMarketContract.WithdrawPayments(
+		ec.transactOpts,
+		ec.transactOpts.From,
+	)
+
+	if err != nil {
+		return "", err
+	}
+
+	return transaction.Hash().Hex(), nil
+}
+
 func (ec *EthereumClient) SubscribePurchaseAnsweredEvent(
 	onEvent func(cid, purchaser string, accessKey []byte),
 	onError func(error),

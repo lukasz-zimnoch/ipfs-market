@@ -166,6 +166,24 @@ func (w *Watcher) handlePurchase(purchase *purchase) {
 		purchase.cid,
 		transactionHash,
 	)
+
+	go w.withdrawPayments()
+}
+
+func (w *Watcher) withdrawPayments() {
+	logger.Infof("starting payments withdrawal")
+
+	transactionHash, err := w.chain.WithdrawPayments()
+	if err != nil {
+		logger.Errorf("could not perform payments withdrawal: [%v]", err)
+		return
+	}
+
+	logger.Infof(
+		"payments withdrawal has been completed successfully; "+
+			"transaction hash on-chain: [%v]",
+		transactionHash,
+	)
 }
 
 type purchase struct {
