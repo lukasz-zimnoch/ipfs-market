@@ -36,7 +36,7 @@ func (i *Ipfs) GetData(cid string) ([]byte, error) {
 		return nil, err
 	}
 
-	_ = os.Remove(temp)
+	_ = os.RemoveAll(temp)
 
 	return data, nil
 }

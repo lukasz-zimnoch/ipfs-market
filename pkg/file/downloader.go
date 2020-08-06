@@ -16,6 +16,7 @@ func NewDownloader(cipher Cipher, storage Storage, workdir string) *Downloader {
 	return &Downloader{
 		cipher:  cipher,
 		storage: storage,
+		workdir: workdir,
 	}
 }
 
