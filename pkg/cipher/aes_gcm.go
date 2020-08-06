@@ -32,7 +32,7 @@ func (ag *AesGcm) Encrypt(data []byte) ([]byte, error) {
 		return nil, fmt.Errorf("could not generate nonce: [%v]", err)
 	}
 
-	return ag.Seal(nil, nonce, data, nil), nil
+	return ag.Seal(nonce, nonce, data, nil), nil
 }
 
 func (ag *AesGcm) Decrypt(data []byte) ([]byte, error) {
