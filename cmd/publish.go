@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"github.com/lukasz-zimnoch/ipfs-market/configs"
 	"github.com/lukasz-zimnoch/ipfs-market/pkg/service"
 	"github.com/urfave/cli"
@@ -34,5 +35,13 @@ func Publish(c *cli.Context) error {
 	filePath := c.String("file")
 	filePrice := big.NewInt(c.Int64("price"))
 
-	return service.Publish(config, filePath, filePrice)
+	fileCid, err := service.Publish(config, filePath, filePrice)
+	if err != nil {
+		return err
+	}
+
+	// pass the file CID to stdout
+	fmt.Println(fileCid)
+
+	return nil
 }

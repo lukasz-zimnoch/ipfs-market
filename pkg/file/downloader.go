@@ -41,6 +41,17 @@ func (d *Downloader) Download(cid string) error {
 		)
 	}
 
+	if _, err := os.Stat(d.workdir); os.IsNotExist(err) {
+		err = os.Mkdir(d.workdir, os.ModePerm)
+		if err != nil {
+			return fmt.Errorf(
+				"could not create directory [%v]: [%v]",
+				d.workdir,
+				err,
+			)
+		}
+	}
+
 	err = ioutil.WriteFile(d.workdir+"/"+cid, decryptedData, os.ModePerm)
 	if err != nil {
 		return fmt.Errorf(
