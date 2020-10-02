@@ -1,3 +1,65 @@
 = ipfs-market
 
+Example repository intended to demonstrate a simple digital goods trading
+system powered by Ethereum smart contracts, IPFS file system
+and some basic cryptography algorithms.
+
+Specifically, the system distinguishes two actors, the *publisher*
+and the *purchaser*. Going down to the use cases:
+
+* A publisher can:
+** publish an encrypted file to the IPFS file system and put it on sale using
+an Ethereum smart contract
+** watch incoming purchase requests, answer them and withdraw the payment
+after successful purchases
+* A purchaser can:
+** purchase a file using their IPFS content identifier (CID)
+
+Technically, there are several major parts:
+
+* An off-chain CLI application which can operate in different modes
+(publish, watch and purchase) to handle the use cases of both actors.
+It is responsible for encryption and decryption of the files and
+interacts with the Ethereum chain and the IPFS file system.
+* An Ethereum smart contract which manages all purchase transactions
+and acts as an escrow for funds
+* The IPFS file system which stores the encrypted files in a distributed manner
+
 == Prerequisites
+
+Make sure you have the following prerequisites installed on your machine:
+
+* Go 1.13+
+* Node.js v12.18.4+
+* GNU Make 3.81+ (optional, commands from the `Makefile` can be invoked by hand)
+* Local or remote IPFS node
+
+== How to run
+
+There is a demo script which makes an end-to-end execution of the entire flow.
+To run it, you need to go through several simple steps:
+
+. https://ipfs.io/#install[Install] and run a local IPFS node (or use a remote one).
+In case you need to customize the IPFS url, you can do it by setting the `storage.url`
+property in the publisher and purchaser config files placed in the `config` directory.
+
+. Run the local Ethereum node by invoking:
++
+```
+make run-ethereum
+```
+After that, a local Ethereum node powered by Ganache will be up and running.
+
+
+. Deploy the smart contracts:
++
+```
+make deploy-contracts
+```
+
+. Run the demo script:
++
+```
+make demo
+```
+The whole publish and purchase flow will be executed.
